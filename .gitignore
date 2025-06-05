@@ -1,0 +1,23 @@
+# Build
+bin/
+obj/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Logs e temporários
+*.log
+*.tmp
+*.pid
+
+# Testes
+TestResults/
+coverage/
+
+# Configs locais
+appsettings.Development.json
+.env
+
+
