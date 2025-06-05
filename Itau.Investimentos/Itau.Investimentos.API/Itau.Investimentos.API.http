@@ -1,0 +1,6 @@
+@Itau.Investimentos.API_HostAddress = http://localhost:5230
+
+GET {{Itau.Investimentos.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

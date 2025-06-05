@@ -1,0 +1,49 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itau.Investimentos.API", "Itau.Investimentos.API\Itau.Investimentos.API.csproj", "{BE0E19E5-442B-4DF4-8216-FC6981D7A36A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itau.Investimentos.Domain", "Itau.Investimentos.Domain\Itau.Investimentos.Domain.csproj", "{BA06B694-0945-4132-9EE1-2071282ABF89}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itau.Investimentos.Infrastructure", "Itau.Investimentos.Infrastructure\Itau.Investimentos.Infrastructure.csproj", "{4212EDF8-2045-4C4C-A9CD-5D872320186A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itau.Investimentos.Worker", "Itau.Investimentos.Worker\Itau.Investimentos.Worker.csproj", "{579E23D1-D055-4052-8644-8D97DAFE998B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Itau.Investimentos.Tests", "Itau.Investimentos.Tests\Itau.Investimentos.Tests.csproj", "{FBA1407E-CA01-4DB1-8B7C-C2F6D21C0EB7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE0E19E5-442B-4DF4-8216-FC6981D7A36A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE0E19E5-442B-4DF4-8216-FC6981D7A36A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE0E19E5-442B-4DF4-8216-FC6981D7A36A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE0E19E5-442B-4DF4-8216-FC6981D7A36A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA06B694-0945-4132-9EE1-2071282ABF89}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA06B694-0945-4132-9EE1-2071282ABF89}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA06B694-0945-4132-9EE1-2071282ABF89}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA06B694-0945-4132-9EE1-2071282ABF89}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4212EDF8-2045-4C4C-A9CD-5D872320186A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4212EDF8-2045-4C4C-A9CD-5D872320186A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4212EDF8-2045-4C4C-A9CD-5D872320186A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4212EDF8-2045-4C4C-A9CD-5D872320186A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{579E23D1-D055-4052-8644-8D97DAFE998B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{579E23D1-D055-4052-8644-8D97DAFE998B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{579E23D1-D055-4052-8644-8D97DAFE998B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{579E23D1-D055-4052-8644-8D97DAFE998B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBA1407E-CA01-4DB1-8B7C-C2F6D21C0EB7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBA1407E-CA01-4DB1-8B7C-C2F6D21C0EB7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBA1407E-CA01-4DB1-8B7C-C2F6D21C0EB7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBA1407E-CA01-4DB1-8B7C-C2F6D21C0EB7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {10E088EC-A1DF-4657-8E6E-9AFFC2708571}
+	EndGlobalSection
+EndGlobal
