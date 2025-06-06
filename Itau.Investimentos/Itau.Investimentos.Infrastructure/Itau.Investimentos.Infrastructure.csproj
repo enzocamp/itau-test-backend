@@ -14,4 +14,8 @@
     <ProjectReference Include="..\Itau.Investimentos.Domain\Itau.Investimentos.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\" />
+  </ItemGroup>
+
 </Project>
