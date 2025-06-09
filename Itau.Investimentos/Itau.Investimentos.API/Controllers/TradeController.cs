@@ -35,14 +35,40 @@ namespace Itau.Investimentos.API.Controllers
 
             await _tradeRepository.AddAsync(trade);
 
-            return CreatedAtAction(nameof(Create), new { id = trade.Id }, trade);
+            var response = new TradeResponseDTO
+            {
+                Id = trade.Id,
+                UserId = trade.UserId,
+                AssetId = trade.AssetId,
+                Quantity = trade.Quantity,
+                UnitPrice = trade.UnitPrice,
+                Fee = trade.Fee,
+                TradeType = trade.TradeType,
+                ExecutedAt = trade.ExecutedAt
+            };
+
+
+            return CreatedAtAction(nameof(GetById), new { id = trade.Id }, response);
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             var trades = await _tradeRepository.GetAllAsync();
-            return Ok(trades);
+
+            var response = trades.Select(t => new TradeResponseDTO
+            {
+                Id = t.Id,
+                UserId = t.UserId,
+                AssetId = t.AssetId,
+                Quantity = t.Quantity,
+                UnitPrice = t.UnitPrice,
+                Fee = t.Fee,
+                TradeType = t.TradeType,
+                ExecutedAt = t.ExecutedAt
+            });
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -55,7 +81,19 @@ namespace Itau.Investimentos.API.Controllers
                 return NotFound();
             }
 
-            return Ok(trade);   
+            var response = new TradeResponseDTO
+            {
+                Id = trade.Id,
+                UserId = trade.UserId,
+                AssetId = trade.AssetId,
+                Quantity = trade.Quantity,
+                UnitPrice = trade.UnitPrice,
+                Fee = trade.Fee,
+                TradeType = trade.TradeType,
+                ExecutedAt = trade.ExecutedAt
+            };
+
+            return Ok(response);   
         }
 
         [HttpPut("{id}")]
@@ -86,6 +124,30 @@ namespace Itau.Investimentos.API.Controllers
 
             await _tradeRepository.DeleteAsync(id);
             return NoContent();
+        }
+
+
+        [HttpGet("filter")]
+        public async Task<IActionResult> GetByUserAndAssetLast30Days([FromQuery] int userId, [FromQuery] int assetId)
+        {
+            if (userId <= 0 || assetId <= 0)
+                return BadRequest("UserId and AssetId must be greater than zero.");
+
+            var trades = await _tradeRepository.GetByUserAndAssetLast30DaysAsync(userId, assetId);
+
+            var response = trades.Select(t => new TradeResponseDTO
+            {
+                Id = t.Id,
+                UserId = t.UserId,
+                AssetId = t.AssetId,
+                Quantity = t.Quantity,
+                UnitPrice = t.UnitPrice,
+                Fee = t.Fee,
+                TradeType = t.TradeType,
+                ExecutedAt = t.ExecutedAt
+            });
+
+            return Ok(response);
         }
 
     }

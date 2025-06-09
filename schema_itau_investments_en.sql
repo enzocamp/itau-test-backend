@@ -31,7 +31,7 @@ CREATE TABLE quotes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     asset_id INT NOT NULL,
     unit_price DECIMAL(15,6) NOT NULL,
-    quoted_ad DATETIME NOT NULL,
+    quoted_at DATETIME NOT NULL,
     FOREIGN KEY (asset_id) REFERENCES assets(id)
 );
 

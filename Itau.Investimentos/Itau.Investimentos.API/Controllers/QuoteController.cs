@@ -31,7 +31,75 @@ namespace Itau.Investimentos.API.Controllers
 
             await _quoteRepository.AddAsync(quote);
 
-            return CreatedAtAction(nameof(Create), new { id = quote.Id }, quote);
+            var response = new QuoteResponseDTO
+            {
+                Id = quote.Id,
+                AssetId = quote.AssetId,
+                UnitPrice = quote.UnitPrice,
+                QuotedAt = quote.QuotedAt
+            };
+
+
+            return CreatedAtAction(nameof(GetById), new { id = quote.Id }, response);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var quote = await _quoteRepository.GetByIdAsync(id);
+            if (quote == null)
+                return NotFound();
+
+            var response = new QuoteResponseDTO
+            {
+                Id = quote.Id,
+                AssetId = quote.AssetId,
+                UnitPrice = quote.UnitPrice,
+                QuotedAt = quote.QuotedAt
+            };
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetByAssetId([FromQuery] int assetId)
+        {
+            if (assetId <= 0)
+                return BadRequest("AssetId must be greater than zero.");
+
+            var quotes = await _quoteRepository.GetByAssetIdAsync(assetId);
+
+            var response = quotes.Select(q => new QuoteResponseDTO
+            {
+                Id = q.Id,
+                AssetId = q.AssetId,
+                UnitPrice = q.UnitPrice,
+                QuotedAt = q.QuotedAt
+            });
+
+            return Ok(response);
+        }
+
+        [HttpGet("last")]
+        public async Task<IActionResult> GetLastByAssetId([FromQuery] int assetId)
+        {
+            if (assetId <= 0)
+                return BadRequest("AssetId must be greater than zero.");
+
+            var quote = await _quoteRepository.GetLastQuoteByAssetIdAsync(assetId);
+
+            if (quote == null)
+                return NotFound();
+
+            var response = new QuoteResponseDTO
+            {
+                Id = quote.Id,
+                AssetId = quote.AssetId,
+                UnitPrice = quote.UnitPrice,
+                QuotedAt = quote.QuotedAt
+            };
+
+            return Ok(response);
         }
     }
 }
