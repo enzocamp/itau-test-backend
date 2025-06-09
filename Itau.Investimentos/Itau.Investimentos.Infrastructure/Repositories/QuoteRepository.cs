@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Itau.Investimentos.Infrastructure.Repositories
 {
-    internal class QuoteRepository : IQuoteRepository
+    public class QuoteRepository : IQuoteRepository
     {
         private readonly InvestmentsDbContext _context;
 

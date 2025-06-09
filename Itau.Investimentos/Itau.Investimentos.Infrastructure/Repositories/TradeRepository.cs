@@ -53,7 +53,10 @@ namespace Itau.Investimentos.Infrastructure.Repositories
         {
             try
             {
-                return await _context.Trades.ToListAsync();
+                return await _context.Trades
+                    .Include(t => t.Asset)
+                    .Include(t => t.User)
+                    .ToListAsync();
             }
             catch (Exception ex)
             {
@@ -65,7 +68,10 @@ namespace Itau.Investimentos.Infrastructure.Repositories
         {
             try
             {
-                return await _context.Trades.FindAsync(id);
+                return await _context.Trades
+                .Include(t => t.Asset)
+                .Include(t => t.User)
+                .FirstOrDefaultAsync(t => t.Id == id);
             }
             catch (Exception ex)
             {
@@ -106,7 +112,7 @@ namespace Itau.Investimentos.Infrastructure.Repositories
         {
             try
             {
-                if (GetByIdAsync(trade.Id) != null)
+                if (await GetByIdAsync(trade.Id) != null)
                 {
                     _context.Trades.Update(trade);
                     await _context.SaveChangesAsync();

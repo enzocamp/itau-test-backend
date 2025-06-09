@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Itau.Investimentos.Domain.Entities
 {
+    [Table("assets")]
     public class Asset
     {
         public int Id { get; set; }

@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Itau.Investimentos.Domain.Entities;
+﻿using Itau.Investimentos.Domain.Entities;
+using Itau.Investimentos.Domain.Enums;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Itau.Investimentos.Infrastructure.Data
 {
@@ -25,7 +21,12 @@ namespace Itau.Investimentos.Infrastructure.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            base.OnModelCreating(modelBuilder);
+            // Forçar enum TradeType como UPPERCASE no banco
+            var tradeTypeConverter = new EnumToStringConverter<TradeType>();
+
+            modelBuilder.Entity<Trade>()
+            .Property(t => t.TradeType)
+            .HasConversion(new EnumToStringConverter<TradeType>());
 
         }
     }

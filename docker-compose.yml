@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: itau-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: My654123
+      MYSQL_DATABASE: itau_investments
+    volumes:
+      - ./schema_itau_investments_en.sql:/docker-entrypoint-initdb.d/init.sql
+
+  api:
+    build:
+      context: .
+      dockerfile: Itau.Investimentos/Itau.Investimentos.API/Dockerfile
+    container_name: itau-api
+    depends_on:
+      - mysql
+    ports:
+      - "5000:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - default
