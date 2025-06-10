@@ -25,7 +25,7 @@ namespace Itau.Investimentos.API.Controllers
                 Email = dto.Email,
                 FeePercentage = dto.FeePercentage
             };
-
+            Console.WriteLine($"Recebido: {dto.FeePercentage}");
             await _userRepository.AddAsync(user);
 
             var response = new UserResponseDTO
