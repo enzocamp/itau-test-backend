@@ -11,6 +11,40 @@ services:
     volumes:
       - ./schema_itau_investments_en.sql:/docker-entrypoint-initdb.d/init.sql
 
+  worker:
+    build:
+      context: .
+      dockerfile: Itau.Investimentos/Itau.Investimentos.Worker/Dockerfile
+    container_name: itau-worker
+    depends_on:
+      - kafka
+      - mysql
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - default
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: itau-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: itau-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
   api:
     build:
       context: .
@@ -24,3 +58,6 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
       - default
+
+networks:
+  default:
