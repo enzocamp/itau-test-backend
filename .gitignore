@@ -20,4 +20,5 @@ coverage/
 appsettings.Development.json
 .env
 
+node_modules/
 
