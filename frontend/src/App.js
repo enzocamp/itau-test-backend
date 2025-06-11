@@ -1,22 +1,24 @@
 import React from 'react';
-import QuoteForm from './QuoteForm';
-import PositionCheck from './PositionCheck';
-import UserForm from './UserForm';
-import AssetForm from './AssetForm';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Home from './pages/Home/Home';
+import UserForm from './pages/User/UserForm';
+import AssetForm from './pages/Asset/AssetForm';
+import QuoteForm from './pages/Quote/QuoteForm';
+import PositionCheck from './pages/Position/PositionCheck';
 
 function App() {
     return (
-        <div className="container mt-4">
-            <h1>Itaú Investimentos</h1>
-            <AssetForm />
-            <hr />
-            <UserForm />
-            <hr />
-            <QuoteForm />
-            <hr />
-            <PositionCheck />
-        </div>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/users" element={<UserForm />} />
+                <Route path="/assets" element={<AssetForm />} />
+                <Route path="/quotes" element={<QuoteForm />} />
+                <Route path="/position" element={<PositionCheck />} />
+            </Routes>
+        </Router>
     );
 }
+
 
 export default App;
