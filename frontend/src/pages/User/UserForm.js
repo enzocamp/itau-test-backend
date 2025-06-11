@@ -1,6 +1,7 @@
-// src/UserForm.js
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
+import './UserForm.css';
 
 function UserForm() {
     const [name, setName] = useState('');
@@ -28,31 +29,35 @@ function UserForm() {
             if (err.response) {
                 console.error("Erro na resposta da API:", err.response.data);
             }
-            alert('Erro ao cadastrar usu�rio. Veja o console.');
+            alert('Erro ao cadastrar usuário. Veja o console.');
         }
     };
 
-
     return (
-        <div>
-            <h2>Cadastrar Usu�rio</h2>
+        <div className="page-container">
+            <Link to="/" className="back-button">⬅️ Voltar à Home</Link>
+
+            <h2 className="page-title">Cadastrar Usuário</h2>
             <form onSubmit={handleSubmit}>
-                <div className="mb-2">
+                <div className="form-group">
                     <label>Nome</label>
-                    <input className="form-control" value={name} onChange={e => setName(e.target.value)} required />
+                    <input value={name} onChange={e => setName(e.target.value)} required />
                 </div>
-                <div className="mb-2">
+                <div className="form-group">
                     <label>Email</label>
-                    <input className="form-control" type="email" value={email} onChange={e => setEmail(e.target.value)} required />
+                    <input type="email" value={email} onChange={e => setEmail(e.target.value)} required />
                 </div>
-                <div className="mb-2">
+                <div className="form-group">
                     <label>Fee (%)</label>
-                    <input className="form-control" type="number" step="0.01" value={feePercentage} onChange={e => setFeePercentage(e.target.value)} required />
+                    <input type="number" step="0.01" value={feePercentage} onChange={e => setFeePercentage(e.target.value)} required />
                 </div>
-                <button className="btn btn-primary">Cadastrar</button>
+                <button className="btn-submit">Cadastrar</button>
             </form>
+
             {response && (
-                <pre className="mt-3 bg-light p-2">{JSON.stringify(response, null, 2)}</pre>
+                <pre className="response-box">
+                    {JSON.stringify(response, null, 2)}
+                </pre>
             )}
         </div>
     );

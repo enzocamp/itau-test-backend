@@ -1,6 +1,7 @@
-
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import axios from 'axios';
+import './AssetForm.css';
+import { Link } from 'react-router-dom';
 
 function AssetForm() {
     const [code, setCode] = useState('');
@@ -10,10 +11,7 @@ function AssetForm() {
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const payload = {
-            code,
-            name
-        };
+        const payload = { code, name };
 
         try {
             const res = await axios.post('http://localhost:5000/api/Asset', payload);
@@ -28,23 +26,25 @@ function AssetForm() {
         }
     };
 
-
     return (
-        <div>
-            <h2>Cadastrar Ativo</h2>
+        <div className="page-container">
+            <Link to="/" className="back-button">⬅️ Voltar para Home</Link>
+            <h2 className="page-title">Cadastrar Ativo</h2>
             <form onSubmit={handleSubmit}>
-                <div className="mb-2">
+                <div className="form-group">
                     <label>Nome</label>
-                    <input className="form-control" value={name} onChange={e => setName(e.target.value)} required />
+                    <input value={name} onChange={e => setName(e.target.value)} required />
                 </div>
-                <div className="mb-2">
-                    <label>Cod�go</label>
-                    <input className="form-control" value={code} onChange={e => setCode(e.target.value)} required />
+                <div className="form-group">
+                    <label>Código</label>
+                    <input value={code} onChange={e => setCode(e.target.value)} required />
                 </div>
-                <button className="btn btn-primary">Cadastrar</button>
+                <button className="btn-submit">Cadastrar</button>
             </form>
             {response && (
-                <pre className="mt-3 bg-light p-2">{JSON.stringify(response, null, 2)}</pre>
+                <pre style={{ marginTop: '24px', background: '#f1f5f9', padding: '16px', borderRadius: '8px' }}>
+                    {JSON.stringify(response, null, 2)}
+                </pre>
             )}
         </div>
     );
