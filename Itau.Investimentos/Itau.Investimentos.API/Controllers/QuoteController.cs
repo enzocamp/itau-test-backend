@@ -1,6 +1,8 @@
-﻿using Itau.Investimentos.API.DTOs;
+﻿using Confluent.Kafka;
+using Itau.Investimentos.API.DTOs;
 using Itau.Investimentos.Domain.Entities;
 using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Infrastructure.Messaging.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Itau.Investimentos.API.Controllers
@@ -9,10 +11,14 @@ namespace Itau.Investimentos.API.Controllers
     [Route("api/[controller]")]
     public class QuoteController : ControllerBase
     {
+        private readonly ILogger<QuoteController> _logger;
+        private readonly IMessageProducer _messageProducer;
         private readonly IQuoteRepository _quoteRepository;
 
-        public QuoteController(IQuoteRepository quoteRepository)
+        public QuoteController(ILogger<QuoteController> logger, IMessageProducer messageProducer, IQuoteRepository quoteRepository)
         {
+            _logger = logger;
+            _messageProducer = messageProducer;
             _quoteRepository = quoteRepository;
         }
 
@@ -29,7 +35,8 @@ namespace Itau.Investimentos.API.Controllers
                 QuotedAt = DateTime.UtcNow
             };
 
-            await _quoteRepository.AddAsync(quote);
+            // await _quoteRepository.AddAsync(quote);
+            await _messageProducer.SendAsync("quotes-topic", quote);
 
             var response = new QuoteResponseDTO
             {
@@ -39,8 +46,10 @@ namespace Itau.Investimentos.API.Controllers
                 QuotedAt = quote.QuotedAt
             };
 
+            _logger.LogInformation("Quote sent to Kafka: {@Quote}", response);
 
-            return CreatedAtAction(nameof(GetById), new { id = quote.Id }, response);
+            return Accepted(new { status = "Message sent to Kafka" });
+            // return CreatedAtAction(nameof(GetById), new { id = quote.Id }, response);
         }
 
         [HttpGet("{id}")]

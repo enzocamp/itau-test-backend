@@ -10,15 +10,22 @@ services:
       MYSQL_DATABASE: itau_investments
     volumes:
       - ./schema_itau_investments_en.sql:/docker-entrypoint-initdb.d/init.sql
-
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pMy654123"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
   worker:
     build:
       context: .
       dockerfile: Itau.Investimentos/Itau.Investimentos.Worker/Dockerfile
     container_name: itau-worker
     depends_on:
-      - kafka
-      - mysql
+      kafka:
+        condition: service_healthy
+      mysql:
+        condition: service_started
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
     networks:
@@ -44,6 +51,11 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+    healthcheck:
+      test: ["CMD", "kafka-topics", "--bootstrap-server", "localhost:9092", "--list"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   api:
     build:

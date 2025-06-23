@@ -4,6 +4,7 @@ using Itau.Investimentos.Infrastructure.Interfaces;
 using Itau.Investimentos.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Itau.Investimentos.Worker.Workers;
+using MySqlConnector;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -13,11 +14,37 @@ var host = Host.CreateDefaultBuilder(args)
         // Connection String do appsettings.json
         var connectionString = configuration.GetConnectionString("DefaultConnection");
 
+        var retries = 10;
+        while (retries > 0)
+        {
+            try
+            {
+                using var connection = new MySqlConnection(connectionString);
+                connection.Open(); // se abrir, sai do loop
+                Console.WriteLine("Conectado ao MySQL com sucesso.");
+                break;
+            }
+            catch (Exception ex)
+            {
+                retries--;
+                Console.WriteLine($"Aguardando MySQL... Tentativas restantes: {retries}");
+                Console.WriteLine($"Erro: {ex.Message}");
+                Thread.Sleep(5000); // espera 5 segundos
+            }
+        }
+
         services.AddDbContext<InvestmentsDbContext>(options =>
-            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+            options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString),
+             mysqlOptions =>
+             {
+                 mysqlOptions.EnableRetryOnFailure(
+                     maxRetryCount: 10,                      // tenta até 10 vezes
+                     maxRetryDelay: TimeSpan.FromSeconds(5), // espera 5s entre cada tentativa
+                     errorNumbersToAdd: null
+                 );
+             }));
 
         services.AddScoped<IQuoteRepository, QuoteRepository>();
-
         services.AddHostedService<QuoteConsumerWorker>();
     })
     .Build();

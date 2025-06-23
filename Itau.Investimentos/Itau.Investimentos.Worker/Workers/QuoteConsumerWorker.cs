@@ -10,10 +10,9 @@ namespace Itau.Investimentos.Worker.Workers
 {
     public class QuoteConsumerWorker : BackgroundService
     {
-
         private readonly ILogger<QuoteConsumerWorker> _logger;
         private readonly IQuoteRepository _quoteRepository;
-        private readonly IConsumer<Ignore, string> _consumer;
+        private readonly IConfiguration _configuration;
 
         public QuoteConsumerWorker(
             ILogger<QuoteConsumerWorker> logger,
@@ -22,64 +21,93 @@ namespace Itau.Investimentos.Worker.Workers
         {
             _logger = logger;
             _quoteRepository = quoteRepository;
-
-            var consumerConfig = new ConsumerConfig
-            {
-                BootstrapServers = configuration["Kafka:BootstrapServers"],
-                GroupId = configuration["Kafka:GroupId"],
-                AutoOffsetReset = AutoOffsetReset.Earliest
-            };
-
-            _consumer = new ConsumerBuilder<Ignore, string>(consumerConfig).Build();
-            _consumer.Subscribe(configuration["Kafka:Topic"]);
+            _configuration = configuration;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogInformation("Kafka consumer started.");
+            int retryCount = 0;
+            const int maxRetries = 10;
 
-            while (!stoppingToken.IsCancellationRequested)
+            while (retryCount < maxRetries && !stoppingToken.IsCancellationRequested)
             {
                 try
                 {
-                    var result = _consumer.Consume(stoppingToken);
-                    var message = JsonSerializer.Deserialize<QuoteKafkaMessage>(result.Message.Value);
-
-                    if (message != null)
+                    var consumerConfig = new ConsumerConfig
                     {
-                        var existing = await _quoteRepository
-                            .GetByAssetIdAsync(message.AssetId);
+                        BootstrapServers = _configuration["Kafka:BootstrapServers"],
+                        GroupId = _configuration["Kafka:GroupId"],
+                        AutoOffsetReset = AutoOffsetReset.Earliest
+                    };
 
-                        var alreadySaved = existing.Any(q =>
-                            q.UnitPrice == message.UnitPrice &&
-                            q.QuotedAt == message.QuotedAt);
+                    using var consumer = new ConsumerBuilder<Ignore, string>(consumerConfig).Build();
+                    consumer.Subscribe(_configuration["Kafka:Topic"]);
 
-                        if (!alreadySaved)
+                    _logger.LogInformation("Kafka consumer connected and listening to topic.");
+
+                    while (!stoppingToken.IsCancellationRequested)
+                    {
+                        try
                         {
-                            await _quoteRepository.AddAsync(new Quote
+                            var result = consumer.Consume(stoppingToken);
+                            var message = JsonSerializer.Deserialize<QuoteKafkaMessage>(result.Message.Value);
+
+                            if (message != null)
                             {
-                                AssetId = message.AssetId,
-                                UnitPrice = message.UnitPrice,
-                                QuotedAt = message.QuotedAt
-                            });
+                                var existing = await _quoteRepository.GetByAssetIdAsync(message.AssetId);
 
-                            _logger.LogInformation("Quote saved from Kafka: AssetId={AssetId}, Price={Price}", message.AssetId, message.UnitPrice);
+                                var alreadySaved = existing.Any(q =>
+                                    q.UnitPrice == message.UnitPrice &&
+                                    q.QuotedAt == message.QuotedAt);
+
+                                if (!alreadySaved)
+                                {
+                                    await _quoteRepository.AddAsync(new Quote
+                                    {
+                                        AssetId = message.AssetId,
+                                        UnitPrice = message.UnitPrice,
+                                        QuotedAt = message.QuotedAt
+                                    });
+
+                                    _logger.LogInformation("Quote saved from Kafka: AssetId={AssetId}, Price={Price}", message.AssetId, message.UnitPrice);
+                                }
+                                else
+                                {
+                                    _logger.LogInformation("Duplicate quote ignored (idempotent). AssetId={AssetId}", message.AssetId);
+                                }
+                            }
                         }
-                        else
+                        catch (ConsumeException ex)
                         {
-                            _logger.LogInformation("Duplicate quote ignored (idempotent).");
+                            _logger.LogWarning(ex, "Kafka consumption failed, retrying...");
+                            await Task.Delay(3000, stoppingToken);
+                        }
+                        catch (JsonException ex)
+                        {
+                            _logger.LogError(ex, "Invalid JSON format received from Kafka.");
+                        }
+                        catch (Exception ex)
+                        {
+                            _logger.LogError(ex, "Unexpected error while processing Kafka message.");
+                            await Task.Delay(3000, stoppingToken);
                         }
                     }
+
+                    consumer.Close();
+                    break;
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(ex, "Error consuming/saving quote from Kafka.");
-                    await Task.Delay(2000, stoppingToken); // simple retry
+                    retryCount++;
+                    _logger.LogError(ex, "Error initializing Kafka consumer. Attempt {Retry}/{Max}", retryCount, maxRetries);
+                    await Task.Delay(5000, stoppingToken);
                 }
             }
 
-            _consumer.Close();
+            if (retryCount >= maxRetries)
+            {
+                _logger.LogCritical("Max retry attempts reached. Kafka consumer failed to start.");
+            }
         }
     }
 }
-

@@ -1,6 +1,7 @@
 using Itau.Investimentos.API.Extensions;
 using System.Text.Json.Serialization;
-
+using Itau.Investimentos.Infrastructure.Messaging.Interfaces;
+using Itau.Investimentos.Infrastructure.Messaging.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,11 +31,7 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 
-builder.Services.AddApplicationServices(builder.Configuration);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+// CORS para permitir o frontend
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", policy =>
@@ -46,11 +43,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Kafka Producer
+builder.Services.AddSingleton<IMessageProducer, KafkaProducerService>();
+
+
+// Application Services e Injeções gerais
+builder.Services.AddApplicationServices(builder.Configuration);
+
 var app = builder.Build();
 
 app.UseCors("AllowAll");
 
-// Configure the HTTP request pipeline.
+// Middleware pipeline
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();

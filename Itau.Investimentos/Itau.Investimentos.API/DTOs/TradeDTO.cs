@@ -8,7 +8,9 @@ namespace Itau.Investimentos.API.DTOs
         public int UserId { get; set; }
         public int AssetId { get; set; }
         public int Quantity { get; set; }
+        [JsonPropertyName("unitPrice")]
         public decimal UnitPrice { get; set; }
+        [JsonPropertyName("fee")]
         public decimal Fee { get; set; }
 
         [JsonPropertyName("tradeType")]
