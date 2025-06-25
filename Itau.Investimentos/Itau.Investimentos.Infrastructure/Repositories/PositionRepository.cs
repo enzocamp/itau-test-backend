@@ -2,13 +2,9 @@
 using Itau.Investimentos.Domain.Exceptions;
 using Itau.Investimentos.Domain.Services;
 using Itau.Investimentos.Infrastructure.Data;
-using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace Itau.Investimentos.Infrastructure.Repositories
 {

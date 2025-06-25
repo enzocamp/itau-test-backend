@@ -1,11 +1,6 @@
 ﻿using Itau.Investimentos.Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Itau.Investimentos.Infrastructure.Interfaces
+namespace Itau.Investimentos.Domain.Interfaces
 {
     public interface IPositionRepository
     {

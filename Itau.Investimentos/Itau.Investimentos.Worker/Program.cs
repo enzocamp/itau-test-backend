@@ -1,6 +1,6 @@
 using Itau.Investimentos.Worker;
 using Itau.Investimentos.Infrastructure.Data;
-using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Domain.Interfaces;
 using Itau.Investimentos.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Itau.Investimentos.Worker.Workers;
