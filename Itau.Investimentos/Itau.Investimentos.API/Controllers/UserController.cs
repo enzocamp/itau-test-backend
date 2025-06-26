@@ -1,6 +1,6 @@
 ﻿using Itau.Investimentos.API.DTOs;
 using Itau.Investimentos.Domain.Entities;
-using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Domain.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Itau.Investimentos.API.Controllers

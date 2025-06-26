@@ -1,7 +1,7 @@
 ﻿using Confluent.Kafka;
 using Itau.Investimentos.API.DTOs;
 using Itau.Investimentos.Domain.Entities;
-using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Domain.Interfaces;
 using Itau.Investimentos.Infrastructure.Messaging.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 

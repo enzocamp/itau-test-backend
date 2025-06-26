@@ -1,6 +1,6 @@
 ﻿using Confluent.Kafka;
 using Itau.Investimentos.Domain.Entities;
-using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Domain.Interfaces;
 using Itau.Investimentos.Worker.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
