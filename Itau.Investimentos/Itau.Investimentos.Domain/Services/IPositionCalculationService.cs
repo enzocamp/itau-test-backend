@@ -10,5 +10,6 @@ namespace Itau.Investimentos.Domain.Services
     public interface IPositionCalculationService
     {
         Task<Position> CalculatePositionAsync(int userId, int assetId);
+        Task RecalculatePnLAsync(int assetId);
     }
 }

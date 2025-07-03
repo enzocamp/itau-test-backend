@@ -1,6 +1,7 @@
 ﻿using Confluent.Kafka;
 using Itau.Investimentos.Domain.Entities;
 using Itau.Investimentos.Domain.Interfaces;
+using Itau.Investimentos.Domain.Services;
 using Itau.Investimentos.Worker.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -13,14 +14,17 @@ namespace Itau.Investimentos.Worker.Workers
         private readonly ILogger<QuoteConsumerWorker> _logger;
         private readonly IQuoteRepository _quoteRepository;
         private readonly IConfiguration _configuration;
+        private readonly IPositionCalculationService _positionCalculationService;
 
         public QuoteConsumerWorker(
             ILogger<QuoteConsumerWorker> logger,
             IQuoteRepository quoteRepository,
+            IPositionCalculationService positionCalculationService,
             IConfiguration configuration)
         {
             _logger = logger;
             _quoteRepository = quoteRepository;
+            _positionCalculationService = positionCalculationService;
             _configuration = configuration;
         }
 
@@ -70,6 +74,8 @@ namespace Itau.Investimentos.Worker.Workers
                                     });
 
                                     _logger.LogInformation("Quote saved from Kafka: AssetId={AssetId}, Price={Price}", message.AssetId, message.UnitPrice);
+                                    // ✅ Atualiza o P&L de todas as posições com esse ativo
+                                    await _positionCalculationService.RecalculatePnLAsync(message.AssetId);
                                 }
                                 else
                                 {

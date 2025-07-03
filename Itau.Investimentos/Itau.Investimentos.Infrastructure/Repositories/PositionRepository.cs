@@ -54,5 +54,18 @@ namespace Itau.Investimentos.Infrastructure.Repositories
                 throw new DbOperationException("Error fetching position by user and asset.", ex);
             }
         }
+        public async Task<List<Position>> GetByAssetIdAsync(int assetId)
+        {
+            try
+            {
+                return await _context.Positions
+                    .Where(p => p.AssetId == assetId)
+                    .ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new DbOperationException("Error fetching positions by asset.", ex);
+            }
+        }
     }
 }

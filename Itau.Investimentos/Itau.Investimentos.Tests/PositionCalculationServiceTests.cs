@@ -4,10 +4,11 @@ using System.Threading.Tasks;
 using Itau.Investimentos.Domain.Entities;
 using Itau.Investimentos.Domain.Enums;
 using Itau.Investimentos.Domain.Services;
-using Itau.Investimentos.Infrastructure.Interfaces;
+using Itau.Investimentos.Domain.Interfaces;
 using Itau.Investimentos.Infrastructure.Services;
 using Moq;
 using Xunit;
+using Microsoft.Extensions.Logging;
 
 namespace Itau.Investimentos.Tests
 {
@@ -15,10 +16,12 @@ namespace Itau.Investimentos.Tests
     {
         private readonly Mock<ITradeRepository> _tradeRepoMock = new();
         private readonly Mock<IQuoteRepository> _quoteRepoMock = new();
+        private readonly Mock<IPositionRepository> _positionRepoMock = new();
+        private readonly Mock<ILogger<PositionCalculationService>> _loggerMock = new();
 
         private PositionCalculationService CreateService()
         {
-            return new PositionCalculationService(_tradeRepoMock.Object, _quoteRepoMock.Object);
+            return new PositionCalculationService(_tradeRepoMock.Object, _quoteRepoMock.Object, _positionRepoMock.Object, _loggerMock.Object);
         }
 
         [Fact]
