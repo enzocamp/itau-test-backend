@@ -25,7 +25,6 @@ namespace Itau.Investimentos.API.Controllers
                 Email = dto.Email,
                 FeePercentage = dto.FeePercentage
             };
-            Console.WriteLine($"Recebido: {dto.FeePercentage}");
             await _userRepository.AddAsync(user);
 
             var response = new UserResponseDTO
@@ -61,6 +60,11 @@ namespace Itau.Investimentos.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var users = await _userRepository.GetAllAsync();
+
+            if(users == null)
+            {
+                return NotFound();
+            }
 
             var response = users.Select(user => new UserResponseDTO
             {

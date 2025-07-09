@@ -59,6 +59,11 @@ namespace Itau.Investimentos.API.Controllers
         {
             var assets = await _assetRepository.GetAllAsync();
 
+            if (assets == null)
+            {
+                return NoContent();
+            }
+
             var response = assets.Select(a => new AssetResponseDTO
             {
                 Id = a.Id,

@@ -10,8 +10,6 @@ namespace Itau.Investimentos.API.DTOs
         public int Quantity { get; set; }
         [JsonPropertyName("unitPrice")]
         public decimal UnitPrice { get; set; }
-        [JsonPropertyName("fee")]
-        public decimal Fee { get; set; }
 
         [JsonPropertyName("tradeType")]
         public TradeType TradeType { get; set; }

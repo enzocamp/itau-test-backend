@@ -2,6 +2,7 @@
 using Itau.Investimentos.Domain.Entities;
 using Itau.Investimentos.Domain.Enums;
 using Itau.Investimentos.Domain.Interfaces;
+using Itau.Investimentos.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Itau.Investimentos.API.Controllers
@@ -11,9 +12,11 @@ namespace Itau.Investimentos.API.Controllers
     public class TradeController : ControllerBase
     {
         private readonly ITradeRepository _tradeRepository;
-        public TradeController(ITradeRepository tradeRepository)
+        private readonly IUserRepository _userRepository;
+        public TradeController(ITradeRepository tradeRepository, IUserRepository userRepository)
         {
             _tradeRepository = tradeRepository;
+            _userRepository = userRepository;
         }
 
         [HttpPost]
@@ -22,13 +25,22 @@ namespace Itau.Investimentos.API.Controllers
             if (dto.Quantity <= 0 || dto.UnitPrice <= 0)
                 return BadRequest("Quantity and UnitPrice must be greater than zero.");
 
+            var user = await _userRepository.GetByIdAsync(dto.UserId);
+
+            if (user == null)
+            {
+                return NotFound("UserId not found");
+            }
+
+            var fee = dto.Quantity * dto.UnitPrice * user.FeePercentage;
+
             var trade = new Trade
             {
                 UserId = dto.UserId,
                 AssetId = dto.AssetId,
                 Quantity = (uint)dto.Quantity,
                 UnitPrice = dto.UnitPrice,
-                Fee = dto.Fee,
+                Fee = fee,
                 TradeType = dto.TradeType,
                 ExecutedAt = DateTime.UtcNow
             };
@@ -55,6 +67,11 @@ namespace Itau.Investimentos.API.Controllers
         public async Task<IActionResult> GetAll()
         {
             var trades = await _tradeRepository.GetAllAsync();
+
+            if(trades == null)
+            {
+                return NoContent();
+            }
 
             var response = trades.Select(t => new TradeResponseDTO
             {
@@ -94,25 +111,6 @@ namespace Itau.Investimentos.API.Controllers
             };
 
             return Ok(response);   
-        }
-
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, TradeDTO dto)
-        {
-            var existing = await _tradeRepository.GetByIdAsync(id);
-            if (existing == null)
-                return NotFound();
-
-            existing.UserId = dto.UserId;
-            existing.AssetId = dto.AssetId;
-            existing.Quantity = (uint)dto.Quantity;
-            existing.UnitPrice = dto.UnitPrice;
-            existing.Fee = dto.Fee;
-            existing.TradeType = dto.TradeType;
-            existing.ExecutedAt = DateTime.UtcNow;
-
-            await _tradeRepository.UpdateAsync(existing);
-            return NoContent();
         }
 
         [HttpDelete("{id}")]
