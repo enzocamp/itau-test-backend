@@ -1,6 +1,7 @@
 ﻿using Itau.Investimentos.API.DTOs;
 using Itau.Investimentos.Domain.Entities;
 using Itau.Investimentos.Domain.Interfaces;
+using Itau.Investimentos.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Itau.Investimentos.API.Controllers
@@ -10,10 +11,12 @@ namespace Itau.Investimentos.API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly ITradeRepository _tradeRepository;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, ITradeRepository tradeRepository)
         {
             _userRepository = userRepository;
+            _tradeRepository = tradeRepository;
         }
 
         [HttpPost]
@@ -99,6 +102,10 @@ namespace Itau.Investimentos.API.Controllers
             var user = await _userRepository.GetByIdAsync(id);
             if (user == null)
                 return NotFound();
+
+            var userTrades = await _tradeRepository.GetByUserIdAsync(id);
+            if (userTrades.Any())
+                return BadRequest("Cannot delete user with existing trades.");
 
             await _userRepository.DeleteAsync(id);
 

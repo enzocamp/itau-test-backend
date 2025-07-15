@@ -54,10 +54,19 @@ namespace Itau.Investimentos.Worker.Workers
                         try
                         {
                             var result = consumer.Consume(stoppingToken);
+                            _logger.LogInformation("Menssage received from Kafka: {Json}", result.Message.Value);
+
                             var message = JsonSerializer.Deserialize<QuoteKafkaMessage>(result.Message.Value);
+
+                            if (message == null)
+                            {
+                                _logger.LogWarning("Kafka message null or failed to deserialize.");
+                                continue; // pula para a próxima mensagem
+                            }
 
                             if (message != null)
                             {
+
                                 var existing = await _quoteRepository.GetByAssetIdAsync(message.AssetId);
 
                                 var alreadySaved = existing.Any(q =>

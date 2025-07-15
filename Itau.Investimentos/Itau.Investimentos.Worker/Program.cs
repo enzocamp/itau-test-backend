@@ -5,6 +5,8 @@ using Itau.Investimentos.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Itau.Investimentos.Worker.Workers;
 using MySqlConnector;
+using Itau.Investimentos.Domain.Services;
+using Itau.Investimentos.Infrastructure.Services;
 
 var host = Host.CreateDefaultBuilder(args)
     .ConfigureServices((context, services) =>
@@ -45,7 +47,15 @@ var host = Host.CreateDefaultBuilder(args)
              }));
 
         services.AddScoped<IQuoteRepository, QuoteRepository>();
+        services.AddScoped<ITradeRepository, TradeRepository>();
+        services.AddScoped<IPositionRepository, PositionRepository>();
+
+        // Serviço de cálculo
+        services.AddScoped<IPositionCalculationService, PositionCalculationService>();
+
         services.AddHostedService<QuoteConsumerWorker>();
+
+
     })
     .Build();
 

@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Itau.Investimentos.Domain.Entities
 {
-    [Table("positios")]
+    [Table("positions")]
     public class Position
     {
         [Key]

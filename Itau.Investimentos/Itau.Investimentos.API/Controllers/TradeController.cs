@@ -13,10 +13,14 @@ namespace Itau.Investimentos.API.Controllers
     {
         private readonly ITradeRepository _tradeRepository;
         private readonly IUserRepository _userRepository;
-        public TradeController(ITradeRepository tradeRepository, IUserRepository userRepository)
+        private readonly IQuoteRepository _quoteRepository;
+        private readonly IAssetRepository _assetRepository;
+        public TradeController(ITradeRepository tradeRepository, IUserRepository userRepository, IQuoteRepository quoteRepository, IAssetRepository assetRepository)
         {
             _tradeRepository = tradeRepository;
             _userRepository = userRepository;
+            _quoteRepository = quoteRepository;
+            _assetRepository = assetRepository;
         }
 
         [HttpPost]
@@ -32,6 +36,18 @@ namespace Itau.Investimentos.API.Controllers
                 return NotFound("UserId not found");
             }
 
+            var asset = await _assetRepository.GetByIdAsync(dto.AssetId);
+
+            if(asset == null)
+            {
+                return BadRequest("Asset id doesn't exist");
+            }
+
+            var quotes = await _quoteRepository.GetByAssetIdAsync(asset.Id);
+            if (quotes == null || !quotes.Any())
+            {
+                return BadRequest("It's not possible to create a trade before a quote exists for this asset.");
+            }
             var fee = dto.Quantity * dto.UnitPrice * user.FeePercentage;
 
             var trade = new Trade
